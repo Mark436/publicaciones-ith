@@ -1,7 +1,431 @@
 ---
-import Layout from '../layouts/Layout.astro'
+import '@/global.css'
 ---
 
-<Layout>
-  <h1>login</h1>
-</Layout>
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PublicacionesITH — Acceso</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* ── Tipografías Base ── */
+      body {
+        font-family: 'DM Sans', sans-serif;
+      }
+      h1,
+      h2,
+      .font-serif-custom {
+        font-family: 'DM Serif Display', serif;
+      }
+
+      /* ── Pseudo-elementos decorativos ── */
+      .panel-left::before {
+        content: '';
+        position: absolute;
+        top: -80px;
+        right: -80px;
+        width: 320px;
+        height: 320px;
+        border-radius: 50%;
+        border: 60px solid rgba(255, 255, 255, 0.04);
+      }
+      .panel-left::after {
+        content: '';
+        position: absolute;
+        bottom: -60px;
+        left: -60px;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        border: 50px solid rgba(255, 255, 255, 0.04);
+      }
+
+      /* ── Transiciones y selectores adyacentes (Inputs) ── */
+      .input-wrap input {
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+        outline: none;
+      }
+      .input-wrap input:focus {
+        border-color: var(--color-ith-azul-mid);
+        background: #ffffff;
+      }
+      .input-icon {
+        transition: color 0.2s;
+      }
+      .input-wrap input:focus + .input-icon {
+        color: var(--color-ith-azul-mid);
+      }
+
+      /* ── Selectores de estado (Radio Buttons) ── */
+      .role-option input[type='radio'] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+      }
+      .role-label {
+        transition:
+          border-color 0.2s,
+          background 0.2s,
+          color 0.2s;
+      }
+      .role-option input[type='radio']:checked + .role-label {
+        border-color: var(--color-ith-azul-mid);
+        background: var(--color-ith-azul-light);
+        color: var(--color-ith-azul);
+      }
+
+      /* ── Utilidad para el banner de error ── */
+      .error-banner {
+        display: none;
+      }
+      .error-banner.show {
+        display: flex;
+      }
+    </style>
+  </head>
+  <body class="bg-bg flex min-h-screen flex-col items-stretch md:flex-row">
+    <div
+      class="panel-left bg-ith-azul relative flex min-h-56 w-full flex-col justify-between overflow-hidden p-8 md:w-7/12 md:p-14"
+    >
+      <div
+        class="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2"
+      >
+        <div class="h-2 w-2 rounded-full bg-orange-400"></div>
+        <span class="text-sm font-normal tracking-wider text-white/70 uppercase"
+          >Instituto Tecnológico de Hermosillo</span
+        >
+      </div>
+
+      <div class="relative z-10 flex flex-1 flex-col justify-center py-12">
+        <h1 class="font-serif-custom mb-5 text-4xl leading-tight text-white md:text-5xl">
+          Gestión de<br /><em class="text-white/60 italic">Publicaciones</em><br />Institucionales
+        </h1>
+        <p class="max-w-sm text-base leading-relaxed text-white/60">
+          Panel centralizado para el Departamento de Comunicación y Difusión. Crea, edita y
+          administra el contenido del portal sin tocar una sola línea de código.
+        </p>
+
+        <div class="mt-10 hidden flex-col gap-3 md:flex">
+          <div class="flex items-center gap-3 text-sm text-white/70">
+            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+              </svg>
+            </div>
+            Editor intuitivo sin código
+          </div>
+          <div class="flex items-center gap-3 text-sm text-white/70">
+            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18M9 21V9"
+                ></path>
+              </svg>
+            </div>
+            Administración jerárquica de roles
+          </div>
+          <div class="flex items-center gap-3 text-sm text-white/70">
+            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="5" y="2" width="14" height="20" rx="2"></rect><path d="M12 18h.01"></path>
+              </svg>
+            </div>
+            Acceso desde cualquier dispositivo
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs tracking-wide text-white/30">
+        © 2026 ITH — Sistemas Computacionales &nbsp;·&nbsp; Fundamentos de Ingeniería de Software
+      </div>
+    </div>
+
+    <div class="bg-surface flex w-full items-center justify-center p-8 md:w-5/12 md:p-12">
+      <div class="w-full max-w-sm">
+        <div class="mb-10">
+          <h2 class="font-serif-custom text-ith-azul mb-1 text-3xl">Bienvenido</h2>
+          <p class="text-text-muted text-sm">Inicia sesión con tus credenciales institucionales</p>
+        </div>
+
+        <div
+          id="errorBanner"
+          class="error-banner text-ith-naranja mb-5 items-center gap-2 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-sm"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            ><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"
+            ></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg
+          >
+          Usuario o contraseña inválidos
+        </div>
+
+        <div class="mb-6">
+          <label
+            for="role"
+            class="text-text-muted mb-2 block text-sm font-medium tracking-wide uppercase"
+            >Tipo de acceso</label
+          >
+          <div class="grid grid-cols-2 gap-2">
+            <div class="role-option">
+              <input type="radio" name="role" id="roleEditor" value="editor" checked />
+              <label
+                class="role-label border-border bg-bg text-text-muted flex cursor-pointer items-center gap-2 rounded-lg border-2 p-3 text-sm font-medium"
+                for="roleEditor"
+              >
+                <span class="text-xl">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    ><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle
+                      cx="12"
+                      cy="7"
+                      r="4"></circle></svg
+                  >
+                </span>
+                Editor
+              </label>
+            </div>
+            <div class="role-option">
+              <input type="radio" name="role" id="roleAdmin" value="admin" />
+              <label
+                class="role-label border-border bg-bg text-text-muted flex cursor-pointer items-center gap-2 rounded-lg border-2 p-3 text-sm font-medium"
+                for="roleAdmin"
+              >
+                <span class="text-xl">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    ><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg
+                  >
+                </span>
+                Admin
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <form id="loginForm" novalidate>
+          <div class="mb-5">
+            <label
+              class="text-text-muted mb-2 block text-sm font-medium tracking-wide uppercase"
+              for="usuario">Usuario</label
+            >
+            <div class="input-wrap relative">
+              <input
+                class="border-border bg-bg text-text-main w-full rounded-lg border-2 py-3 pr-4 pl-11 text-base"
+                type="text"
+                id="usuario"
+                placeholder="nombre.apellido"
+                autocomplete="username"
+              />
+              <span
+                class="input-icon text-text-muted pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-lg"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  ><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle
+                    cx="12"
+                    cy="7"
+                    r="4"></circle></svg
+                >
+              </span>
+            </div>
+          </div>
+
+          <div class="mb-5">
+            <label
+              class="text-text-muted mb-2 block text-sm font-medium tracking-wide uppercase"
+              for="password">Contraseña</label
+            >
+            <div class="input-wrap relative">
+              <input
+                class="border-border bg-bg text-text-main w-full rounded-lg border-2 py-3 pr-4 pl-11 text-base"
+                type="password"
+                id="password"
+                placeholder="••••••••"
+                autocomplete="current-password"
+              />
+              <span
+                class="input-icon text-text-muted pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-lg"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  ><rect x="3" y="11" width="18" height="11" rx="2"></rect><path
+                    d="M7 11V7a5 5 0 0110 0v4"></path></svg
+                >
+              </span>
+              <button
+                type="button"
+                class="text-text-muted hover:text-ith-azul absolute top-1/2 right-3 flex -translate-y-1/2 cursor-pointer items-center border-none bg-transparent p-0 text-lg"
+                id="togglePass"
+                aria-label="Mostrar contraseña"
+              >
+                <svg
+                  id="eyeIcon"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  ><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle
+                    cx="12"
+                    cy="12"
+                    r="3"></circle></svg
+                >
+              </button>
+            </div>
+            <div class="mt-2 text-right">
+              <span class="text-ith-azul-mid text-sm font-medium no-underline hover:underline"
+                >¿Olvidaste tu contraseña? Contacta al administrador</span
+              >
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="bg-ith-azul hover:bg-ith-azul-mid mb-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-none p-3 text-base font-medium tracking-wide text-white transition-all active:scale-95"
+            id="btnLogin"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              ><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"></path></svg
+            >
+            Ingresar al sistema
+          </button>
+        </form>
+
+        <div class="text-text-muted text-center text-xs">
+          Sistema de gestión para <strong class="text-ith-azul font-medium"
+            >Comunicación y Difusión ITH</strong
+          ><br />
+          Acceso restringido a personal autorizado
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('loginForm') as HTMLFormElement
+        const togglePass = document.getElementById('togglePass') as HTMLButtonElement
+        const passInput = document.getElementById('password') as HTMLInputElement
+        const usuarioInput = document.getElementById('usuario') as HTMLInputElement
+        const errorBanner = document.getElementById('errorBanner') as HTMLDivElement
+        const btnLogin = document.getElementById('btnLogin') as HTMLButtonElement
+
+        if (togglePass && passInput) {
+          togglePass.addEventListener('click', () => {
+            const isPass = passInput.type === 'password'
+            passInput.type = isPass ? 'text' : 'password'
+
+            const svg = togglePass.querySelector('svg')
+            if (svg) {
+              svg.innerHTML = isPass
+                ? '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19M1 1l22 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
+                : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'
+            }
+          })
+        }
+
+        if (form) {
+          form.addEventListener('submit', (e: SubmitEvent) => {
+            e.preventDefault()
+            const user = usuarioInput.value.trim()
+            const pass = passInput.value
+
+            errorBanner.classList.remove('show')
+
+            if (!user || !pass) {
+              errorBanner.classList.add('show')
+              return
+            }
+
+            btnLogin.innerHTML =
+              '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Verificando...'
+            btnLogin.style.opacity = '0.8'
+            btnLogin.style.pointerEvents = 'none'
+
+            setTimeout(() => {
+              btnLogin.innerHTML =
+                '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg> Ingresar al sistema'
+              btnLogin.style.opacity = '1'
+              btnLogin.style.pointerEvents = 'auto'
+              errorBanner.classList.add('show')
+            }, 1500)
+          })
+        }
+      })
+    </script>
+  </body>
+</html>
