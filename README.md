@@ -116,3 +116,4 @@ A partir de este momento, cada respuesta debe respetar estas reglas sin necesida
 ---
 
 ## 💡 Recomendación
+si averiguas como utiliza el claude.md y el agents.md para la ia, si no, con el prompt vamos más q mejor
