@@ -87,30 +87,46 @@ Si vas a utilizar una IA para ayudarte con el proyecto, copia este prompt al ini
 > **Prompt recomendado**
 
 ```text
-Estoy trabajando en un proyecto hecho con Astro, Tailwind CSS, TypeScript y Vanilla JavaScript.
+Estoy trabajando en el proyecto "Publicaciones ITH" (para la materia de Ingeniería de Software) hecho con Astro, Tailwind CSS, TypeScript y Vanilla JavaScript.
 
-Quiero que todo el código siga estas reglas:
+Quiero que todo el código que generes, sugieras o modifiques siga ESTRICTAMENTE estas reglas:
 
-- Usa Astro como framework.
-- No utilices React, Vue, Svelte ni otros frameworks.
-- Toda la interactividad debe hacerse con Vanilla JavaScript.
-- Usa TypeScript cuando sea posible.
-- Utiliza Tailwind únicamente para layout, espaciado, tipografía y colores base.
-- No uses clases arbitrarias de Tailwind como w-[200px], h-[300px], text-[15px] o bg-[#123456].
-- Si necesitas animaciones, pseudo-elementos o estilos complejos utiliza CSS.
-- Usa HTML semántico.
-- Todo botón o enlace que solo tenga un ícono debe incluir aria-label.
+**1. Stack y Arquitectura**
+- Usa Astro como framework principal. Renderizado estático por defecto.
+- No utilices React, Vue, Svelte ni otros frameworks reactivos.
+- Toda la interactividad debe hacerse exclusivamente con Vanilla JavaScript dentro de etiquetas `<script>`.
+- Usa TypeScript cuando sea posible (interfaces, aserciones de tipos del DOM, etc.).
+
+**2. Estilos (Tailwind y CSS)**
+- Utiliza Tailwind ÚNICAMENTE para layout, espaciado, tipografía y colores base.
+- PROHIBIDO usar clases arbitrarias de Tailwind (como `w-[200px]`, `h-[300px]`, `text-[15px]` o `bg-[#123456]`). Usa siempre la escala estándar.
+- Si necesitas animaciones, pseudo-elementos (`::before`, `::after`) o estilos/estados complejos, utiliza CSS puro.
+
+**3. Buenas Prácticas y Sintaxis**
+- Usa HTML semántico (`<main>`, `<article>`, `<nav>`, etc.).
+- Todo botón o enlace que solo tenga un ícono debe incluir `aria-label` o `title`.
 - Usa comillas simples en JavaScript y TypeScript.
-- No utilices punto y coma al final de las líneas.
-- Usa el alias @/ para importar archivos desde src.
-- Los archivos .astro deben llamarse en PascalCase.
-- Los archivos .ts y .js deben llamarse en camelCase.
-- Las variables y funciones deben estar en inglés.
-- Los textos de la interfaz y los datos del sistema deben estar en español.
-- Los datos simulados deben estar en src/constants.
-- Si detectas código que no sigue estas reglas, corrígelo automáticamente.
+- No utilices punto y coma (`;`) al final de las líneas en JavaScript/TypeScript.
+- Usa el alias `@/` para importar archivos estáticos desde `src` (ej. `import { data } from '@/constants/posts.ts'`).
 
-A partir de este momento, cada respuesta debe respetar estas reglas sin necesidad de volver a recordártelas.
+**4. Convenciones de Nombres e Idioma (Spanglish Controlado)**
+- Los archivos `.astro` deben llamarse en PascalCase.
+- Los archivos `.ts` y `.js` deben llamarse en camelCase.
+- La lógica operativa (variables, funciones, métodos, IDs de DOM) debe estar en inglés (ej. `applyFilters`, `toastTimer`).
+- Los textos de la interfaz gráfica y el modelo de datos (propiedades de objetos, interfaces) deben estar en español (ej. `titulo`, `autor`, `PostStatus`).
+
+**5. Datos y Entorno**
+- Los datos simulados del sistema deben estar tipados y alojados en `src/constants/`.
+- Al sugerir comandos de consola para iniciar el servidor de desarrollo, utiliza el modo en segundo plano: `astro dev --background` (para gestionarlo sugiere `astro dev stop`, `status` o `logs`).
+
+**6. Documentación Oficial de Referencia**
+Si tienes dudas sobre la API de Astro, básate en estas guías oficiales antes de responder:
+- Rutas: https://docs.astro.build/en/guides/routing/
+- Componentes: https://docs.astro.build/en/basics/astro-components/
+- Colecciones: https://docs.astro.build/en/guides/content-collections/
+- Estilos: https://docs.astro.build/en/guides/styling/
+
+Si detectas código en mis peticiones que no sigue estas reglas, corrígelo automáticamente. A partir de este momento, cada respuesta tuya debe respetar estas directrices al 100% sin necesidad de volver a recordártelas ni mencionarlas.
 ```
 
 ---
