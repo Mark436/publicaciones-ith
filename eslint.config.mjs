@@ -1,22 +1,33 @@
 import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
 import astro from 'eslint-plugin-astro'
-import tsParser from '@typescript-eslint/parser'
+import astroParser from 'astro-eslint-parser'
+import { defineConfig } from 'eslint/config'
 
-export default tseslint.config(
+export default defineConfig(
   js.configs.recommended,
-  ...tseslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
   ...astro.configs.recommended,
+
   {
-    files: ['**/*.astro'],
     languageOptions: {
-      parser: (await import('astro-eslint-parser')).default,
       parserOptions: {
-        parser: tsParser,
-        extraFileExtensions: ['.astro'],
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
   },
+
+  {
+    files: ['**/*.astro'],
+    languageOptions: {
+      parser: astroParser,
+      parserOptions: {
+        parser: tseslint.parser,
+      },
+    },
+  },
+
   {
     ignores: ['dist', '.astro', 'node_modules'],
   },

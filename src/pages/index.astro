@@ -1,5 +1,716 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import { POSTS_DATA } from '@/constants/posts.ts'
+
+export type PostStatus = 'visible' | 'hidden' | 'draft'
+
+export interface Post {
+  id: number
+  titulo: string
+  autor: string
+  fecha: string
+  status: PostStatus
+  orden: number
+}
+
+const posts = POSTS_DATA as Post[]
+
+const totalCount = posts.length
+const visibleCount = posts.filter((p: Post) => p.status === 'visible').length
+const hiddenCount = posts.filter((p: Post) => p.status === 'hidden').length
+const draftCount = posts.filter((p: Post) => p.status === 'draft').length
 ---
 
-<Layout />
+<Layout pageTitle="Dashboard" pageSubtitle="Gestión de publicaciones del portal ITH">
+  <div slot="topbar-actions">
+    <a
+      href="/publicaciones/nueva"
+      class="bg-ith-azul hover:bg-ith-azul-mid flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white no-underline transition-all active:scale-95"
+      id="btnNewPost"
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+      >
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Crear nueva publicación
+    </a>
+  </div>
+
+  <div class="flex flex-col gap-8">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div
+        class="bg-surface border-border flex items-start gap-3.5 rounded-xl border p-5 shadow-sm"
+      >
+        <div
+          class="bg-ith-azul-light text-ith-azul-mid flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            ><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline
+              points="14,2 14,8 20,8"></polyline></svg
+          >
+        </div>
+        <div>
+          <div class="text-ith-azul metric-total mb-1 font-serif text-3xl leading-none">
+            {totalCount}
+          </div>
+          <div class="text-text-muted text-xs">Total de publicaciones</div>
+        </div>
+      </div>
+
+      <div
+        class="bg-surface border-border flex items-start gap-3.5 rounded-xl border p-5 shadow-sm"
+      >
+        <div
+          class="bg-ith-verde-light text-ith-verde flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            ><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle
+              cx="12"
+              cy="12"
+              r="3"></circle></svg
+          >
+        </div>
+        <div>
+          <div class="text-ith-azul metric-visible mb-1 font-serif text-3xl leading-none">
+            {visibleCount}
+          </div>
+          <div class="text-text-muted text-xs">Publicadas y visibles</div>
+        </div>
+      </div>
+
+      <div
+        class="bg-surface border-border flex items-start gap-3.5 rounded-xl border p-5 shadow-sm"
+      >
+        <div
+          class="bg-bg text-text-muted flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            ><path
+              d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19M1 1l22 22"
+            ></path></svg
+          >
+        </div>
+        <div>
+          <div class="text-ith-azul metric-hidden mb-1 font-serif text-3xl leading-none">
+            {hiddenCount}
+          </div>
+          <div class="text-text-muted text-xs">Ocultas</div>
+        </div>
+      </div>
+
+      <div
+        class="bg-surface border-border flex items-start gap-3.5 rounded-xl border p-5 shadow-sm"
+      >
+        <div
+          class="text-ith-naranja flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+          style="background-color: #FEF0E6;"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            ><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"
+            ></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg
+          >
+        </div>
+        <div>
+          <div class="text-ith-azul metric-draft mb-1 font-serif text-3xl leading-none">
+            {draftCount}
+          </div>
+          <div class="text-text-muted text-xs">Borradores</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div class="bg-bg border-border flex gap-1 rounded-lg border p-1" id="filterTabsContainer">
+        <button
+          class="filter-tab text-ith-azul bg-surface flex cursor-pointer items-center gap-1.5 rounded-md border-none px-3 py-1.5 text-sm font-medium shadow-sm transition-all"
+          data-filter="all"
+        >
+          Todas <span
+            class="badge-total bg-ith-azul rounded-full px-2 py-0.5 text-xs font-medium text-white"
+            >{totalCount}</span
+          >
+        </button>
+        <button
+          class="filter-tab text-text-muted hover:text-text-main flex cursor-pointer items-center gap-1.5 rounded-md border-none bg-transparent px-3 py-1.5 text-sm font-medium transition-all"
+          data-filter="visible"
+        >
+          Visibles <span
+            class="badge-visible bg-ith-azul-light text-ith-azul rounded-full px-2 py-0.5 text-xs font-medium"
+            >{visibleCount}</span
+          >
+        </button>
+        <button
+          class="filter-tab text-text-muted hover:text-text-main flex cursor-pointer items-center gap-1.5 rounded-md border-none bg-transparent px-3 py-1.5 text-sm font-medium transition-all"
+          data-filter="hidden"
+        >
+          Ocultas <span
+            class="badge-hidden bg-ith-azul-light text-ith-azul rounded-full px-2 py-0.5 text-xs font-medium"
+            >{hiddenCount}</span
+          >
+        </button>
+        <button
+          class="filter-tab text-text-muted hover:text-text-main flex cursor-pointer items-center gap-1.5 rounded-md border-none bg-transparent px-3 py-1.5 text-sm font-medium transition-all"
+          data-filter="draft"
+        >
+          Borradores <span
+            class="badge-draft bg-ith-azul-light text-ith-azul rounded-full px-2 py-0.5 text-xs font-medium"
+            >{draftCount}</span
+          >
+        </button>
+      </div>
+
+      <div class="relative w-full max-w-xs">
+        <span class="text-text-muted absolute top-1/2 left-3 -translate-y-1/2">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            ><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"
+            ></line></svg
+          >
+        </span>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Buscar por título…"
+          class="bg-surface border-border text-text-main focus:border-ith-azul-mid w-full rounded-lg border-2 py-2 pr-4 pl-10 text-sm transition-colors outline-none"
+        />
+      </div>
+    </div>
+
+    <div class="bg-surface border-border overflow-x-auto rounded-xl border shadow-sm">
+      <table class="w-full min-w-max border-collapse" id="newsTable">
+        <thead class="bg-bg border-border border-b">
+          <tr>
+            <th
+              class="text-text-muted px-5 py-3 text-left text-xs font-medium tracking-wider uppercase"
+              >Orden</th
+            >
+            <th
+              class="text-text-muted px-4 py-3 text-left text-xs font-medium tracking-wider uppercase"
+              >Título de la publicación</th
+            >
+            <th
+              class="text-text-muted px-4 py-3 text-left text-xs font-medium tracking-wider uppercase"
+              >Autor</th
+            >
+            <th
+              class="text-text-muted px-4 py-3 text-left text-xs font-medium tracking-wider uppercase"
+              >Fecha</th
+            >
+            <th
+              class="text-text-muted px-4 py-3 text-left text-xs font-medium tracking-wider uppercase"
+              >Estado</th
+            >
+            <th
+              class="text-text-muted px-5 py-3 text-right text-xs font-medium tracking-wider uppercase"
+              >Acciones</th
+            >
+          </tr>
+        </thead>
+        <tbody id="tableBody" class="divide-border divide-y">
+          {
+            posts.map((n) => (
+              <tr
+                class="news-row hover:bg-bg/50 group transition-colors"
+                data-id={n.id}
+                data-status={n.status}
+                data-title={n.titulo}
+                data-autor={n.autor}
+              >
+                <td class="px-5 py-3 align-middle">
+                  <div class="flex items-center gap-2">
+                    <span class="text-ith-azul row-order min-w-6 text-sm font-medium">
+                      {n.orden}
+                    </span>
+                    <div class="flex flex-col gap-0.5">
+                      <button
+                        class="action-move-up text-text-muted hover:bg-ith-azul-light hover:text-ith-azul cursor-pointer rounded border-none bg-transparent p-0.5"
+                        title="Subir"
+                      >
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.5"
+                          stroke-linecap="round"
+                          class="pointer-events-none"
+                        >
+                          <polyline points="18,15 12,9 6,15" />
+                        </svg>
+                      </button>
+                      <button
+                        class="action-move-down text-text-muted hover:bg-ith-azul-light hover:text-ith-azul cursor-pointer rounded border-none bg-transparent p-0.5"
+                        title="Bajar"
+                      >
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.5"
+                          stroke-linecap="round"
+                          class="pointer-events-none"
+                        >
+                          <polyline points="6,9 12,15 18,9" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-3 align-middle">
+                  <div class="text-text-main max-w-xs truncate text-sm font-medium">{n.titulo}</div>
+                  <div class="text-text-muted text-xs">Autor: {n.autor}</div>
+                </td>
+                <td class="text-text-muted px-4 py-3 align-middle text-sm">
+                  {n.autor.split(' ')[0]}
+                </td>
+                <td class="text-text-muted px-4 py-3 align-middle text-sm whitespace-nowrap">
+                  {n.fecha}
+                </td>
+                <td class="badge-container px-4 py-3 align-middle">
+                  {n.status === 'visible' && (
+                    <span class="bg-ith-verde-light text-ith-verde inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium">
+                      <span class="h-1.5 w-1.5 rounded-full bg-current" />
+                      Visible
+                    </span>
+                  )}
+                  {n.status === 'hidden' && (
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
+                      <span class="h-1.5 w-1.5 rounded-full bg-current" />
+                      Oculta
+                    </span>
+                  )}
+                  {n.status === 'draft' && (
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-yellow-50 px-2.5 py-1 text-xs font-medium text-yellow-700">
+                      <span class="h-1.5 w-1.5 rounded-full bg-current" />
+                      Borrador
+                    </span>
+                  )}
+                </td>
+                <td class="px-5 py-3 text-right align-middle">
+                  <div class="flex items-center justify-end gap-1.5">
+                    <button class="action-edit border-border text-text-muted hover:bg-ith-azul-light hover:text-ith-azul hover:border-ith-azul/20 group/btn relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border bg-transparent transition-colors">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        class="pointer-events-none"
+                      >
+                        <>
+                          <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                          <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </>
+                      </svg>
+                      <span class="bg-text-main pointer-events-none absolute bottom-full left-1/2 mb-1 -translate-x-1/2 rounded px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover/btn:opacity-100">
+                        Editar
+                      </span>
+                    </button>
+
+                    <button class="action-visibility border-border text-text-muted hover:bg-ith-verde-light hover:text-ith-verde hover:border-ith-verde/20 group/btn relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border bg-transparent transition-colors">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        class="icon-eye pointer-events-none"
+                      >
+                        <path
+                          d={
+                            n.status === 'hidden'
+                              ? 'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'
+                              : 'M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19M1 1l22 22'
+                          }
+                        />
+                      </svg>
+                    </button>
+
+                    <button class="action-delete border-border text-text-muted hover:bg-ith-rojo-light hover:text-ith-rojo hover:border-ith-rojo/20 group/btn relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border bg-transparent transition-colors">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        class="pointer-events-none"
+                      >
+                        <>
+                          <polyline points="3,6 5,6 21,6" />
+                          <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2" />
+                        </>
+                      </svg>
+                      <span class="bg-text-main pointer-events-none absolute bottom-full left-1/2 mb-1 -translate-x-1/2 rounded px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover/btn:opacity-100">
+                        Eliminar
+                      </span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+
+      <div
+        class="text-text-muted hidden flex-col items-center justify-center py-16 text-center"
+        id="emptyState"
+      >
+        <svg
+          class="mb-3 opacity-30"
+          width="48"
+          height="48"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          ><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline
+            points="14,2 14,8 20,8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line></svg
+        >
+        <p class="text-sm">No se encontraron publicaciones con ese criterio</p>
+      </div>
+    </div>
+  </div>
+
+  <button
+    class="bg-ith-azul hover:bg-ith-azul-mid fixed right-8 bottom-8 z-40 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border-none text-white shadow-xl transition-transform hover:scale-110"
+    id="helpFab"
+    title="Tutorial de uso"
+  >
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      class="pointer-events-none"
+      ><circle cx="12" cy="12" r="10"></circle><path
+        d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"></path></svg
+    >
+  </button>
+
+  <div
+    class="bg-surface border-border fixed right-8 bottom-24 z-40 hidden w-80 flex-col overflow-hidden rounded-2xl border shadow-2xl"
+    id="tutorialPanel"
+  >
+    <div class="bg-ith-azul flex items-center justify-between px-4 py-3">
+      <h4 class="m-0 text-sm font-medium text-white">¿Cómo usar el dashboard?</h4>
+      <button
+        class="flex cursor-pointer border-none bg-transparent text-white/60 hover:text-white"
+        id="tutorialClose"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          class="pointer-events-none"
+          ><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"
+          ></line></svg
+        >
+      </button>
+    </div>
+    <div class="flex flex-col gap-4 p-4"></div>
+  </div>
+
+  <div
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+    id="deleteModal"
+  >
+    <div class="bg-surface w-full max-w-sm rounded-2xl p-8 shadow-2xl">
+      <h3 class="text-ith-azul m-0 mb-2 font-serif text-xl">Eliminar publicación</h3>
+      <p class="text-text-muted mb-6 text-sm">
+        ¿Estás seguro de eliminar "<span id="deleteTitle" class="text-text-main font-bold"></span>"?
+        Esta acción es permanente.
+      </p>
+      <div class="flex justify-end gap-3">
+        <button
+          class="border-border text-text-muted hover:bg-bg hover:text-text-main cursor-pointer rounded-lg border bg-transparent px-4 py-2 text-sm font-medium transition-colors"
+          id="btnCancelDelete">Cancelar</button
+        >
+        <button
+          class="bg-ith-rojo flex cursor-pointer items-center gap-2 rounded-lg border-none px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-800"
+          id="btnConfirmDelete"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            class="pointer-events-none"
+            ><polyline points="3,6 5,6 21,6"></polyline><path
+              d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"
+            ></path></svg
+          >
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="pointer-events-none fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 translate-y-24 items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium text-white opacity-0 transition-all duration-300"
+    id="toast"
+  >
+  </div>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Helpers con aserciones de tipo (Generics)
+    const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T
+    const show = (el: HTMLElement) => {
+      el.classList.remove('hidden')
+      el.classList.add('flex')
+    }
+    const hide = (el: HTMLElement) => {
+      el.classList.add('hidden')
+      el.classList.remove('flex')
+    }
+
+    // Estados y Configuración
+    const STATUS = { ALL: 'all', VISIBLE: 'visible', HIDDEN: 'hidden', DRAFT: 'draft' }
+    const BADGE: Record<string, { bg: string; text: string; label: string }> = {
+      [STATUS.VISIBLE]: { bg: 'bg-ith-verde-light', text: 'text-ith-verde', label: 'Visible' },
+      [STATUS.HIDDEN]: { bg: 'bg-gray-100', text: 'text-gray-500', label: 'Oculta' },
+    }
+
+    // Caché de elementos del DOM tipados correctamente
+    const searchInput = $<HTMLInputElement>('searchInput')
+    const tableBody = $('tableBody')
+    const deleteModal = $('deleteModal')
+    const emptyState = $('emptyState')
+    const tableEl = $('newsTable')
+    const deleteTitle = $('deleteTitle')
+    const tutorialPanel = $('tutorialPanel')
+    const toast = $('toast')
+
+    let currentFilter = STATUS.ALL
+    let pendingDeleteId: string | null = null
+    let toastTimer: number
+
+    // Listeners principales
+    searchInput.addEventListener('input', applyFilters)
+
+    $('filterTabsContainer').addEventListener('click', (e: Event) => {
+      // Aserción para eventos del DOM
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('.filter-tab')
+      if (!btn) return
+      currentFilter = btn.dataset.filter || STATUS.ALL
+
+      document.querySelectorAll<HTMLElement>('.filter-tab').forEach((b) => {
+        b.classList.remove('text-ith-azul', 'bg-surface', 'shadow-sm')
+        b.classList.add('text-text-muted', 'hover:text-text-main', 'bg-transparent')
+        const span = b.querySelector<HTMLElement>('span')!
+        span.classList.remove('bg-ith-azul', 'text-white')
+        span.classList.add('bg-ith-azul-light', 'text-ith-azul')
+      })
+
+      btn.classList.add('text-ith-azul', 'bg-surface', 'shadow-sm')
+      btn.classList.remove('text-text-muted', 'hover:text-text-main', 'bg-transparent')
+      const activeSpan = btn.querySelector<HTMLElement>('span')!
+      activeSpan.classList.add('bg-ith-azul', 'text-white')
+      activeSpan.classList.remove('bg-ith-azul-light', 'text-ith-azul')
+
+      applyFilters()
+    })
+
+    tableBody.addEventListener('click', (e: Event) => {
+      const target = e.target as HTMLElement
+      const row = target.closest<HTMLElement>('.news-row')
+      const actionEl = target.closest<HTMLElement>('[class*="action-"]')
+      if (!row || !actionEl) return
+
+      const { id, title } = row.dataset
+      const actions: Record<string, () => void> = {
+        'action-edit': () => showToast(`Editando: ${title!.slice(0, 40)}…`, 'blue'),
+        'action-visibility': () => toggleVisibility(row),
+        'action-delete': () => askDelete(id!, title!),
+        'action-move-up': () => showToast('Cambio de orden en progreso...', 'blue'),
+        'action-move-down': () => showToast('Cambio de orden en progreso...', 'blue'),
+      }
+
+      const actionClass = Array.from(actionEl.classList).find((c) => actions[c])
+      if (actionClass) actions[actionClass]()
+    })
+
+    $('btnCancelDelete').addEventListener('click', () => {
+      hide(deleteModal)
+      pendingDeleteId = null
+    })
+
+    $('btnConfirmDelete').addEventListener('click', () => {
+      if (!pendingDeleteId) return
+      const row = document.querySelector<HTMLElement>(`.news-row[data-id="${pendingDeleteId}"]`)
+      if (row) {
+        row.remove()
+        updateDashboardCounts()
+      }
+
+      hide(deleteModal)
+      pendingDeleteId = null
+      showToast('✓ Publicación eliminada correctamente', 'red')
+      applyFilters()
+    })
+
+    $('btnNewPost').addEventListener('click', () =>
+      showToast('Redirigiendo a nueva publicación…', 'green'),
+    )
+
+    $('helpFab').addEventListener('click', () => {
+      tutorialPanel.classList.toggle('hidden')
+      tutorialPanel.classList.toggle('flex')
+    })
+
+    $('tutorialClose').addEventListener('click', () => hide(tutorialPanel))
+
+    // Funciones independientes
+    function applyFilters() {
+      const query = searchInput.value.toLowerCase()
+      let hasVisible = false
+
+      document.querySelectorAll<HTMLElement>('.news-row').forEach((row) => {
+        const status = row.dataset.status || ''
+        const title = row.dataset.title || ''
+        const autor = row.dataset.autor || ''
+
+        const isVisible =
+          (currentFilter === STATUS.ALL || status === currentFilter) &&
+          (title.toLowerCase().includes(query) || autor.toLowerCase().includes(query))
+
+        row.style.display = isVisible ? '' : 'none'
+        if (isVisible) hasVisible = true
+      })
+
+      hasVisible ? hide(emptyState) : show(emptyState)
+      hasVisible ? tableEl.classList.remove('hidden') : tableEl.classList.add('hidden')
+    }
+
+    function updateBadge(row: HTMLElement, status: string) {
+      const { bg, text, label } = BADGE[status]
+      row.querySelector<HTMLElement>('.badge-container')!.innerHTML =
+        `<span class="${bg} ${text} inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"><span class="h-1.5 w-1.5 rounded-full bg-current"></span>${label}</span>`
+    }
+
+    function updateEyeIcon(row: HTMLElement, isHidden: boolean) {
+      row
+        .querySelector<SVGElement>('.icon-eye path')!
+        .setAttribute(
+          'd',
+          isHidden
+            ? 'M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19M1 1l22 22'
+            : 'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z',
+        )
+    }
+
+    function toggleVisibility(row: HTMLElement) {
+      const status = row.dataset.status
+      if (status === STATUS.DRAFT)
+        return showToast('Los borradores deben publicarse primero', 'red')
+
+      const isHidden = status === STATUS.HIDDEN
+      const newStatus = isHidden ? STATUS.VISIBLE : STATUS.HIDDEN
+      row.dataset.status = newStatus
+
+      updateBadge(row, newStatus)
+      updateEyeIcon(row, !isHidden)
+      updateDashboardCounts()
+      applyFilters()
+      showToast(
+        isHidden ? '✓ Publicación ahora visible' : '✓ Publicación ocultada',
+        isHidden ? 'green' : 'blue',
+      )
+    }
+
+    function askDelete(id: string, title: string) {
+      pendingDeleteId = id
+      deleteTitle.textContent = title.length > 60 ? title.slice(0, 60) + '…' : title
+      show(deleteModal)
+    }
+
+    function updateDashboardCounts() {
+      const counts: Record<string, number> = { total: 0, visible: 0, hidden: 0, draft: 0 }
+
+      document.querySelectorAll<HTMLElement>('.news-row').forEach((r) => {
+        counts.total++
+        if (r.dataset.status) counts[r.dataset.status]++
+      })
+
+      Object.keys(counts).forEach((k) => {
+        document.querySelector<HTMLElement>(`.metric-${k}`)!.textContent = counts[k].toString()
+        document.querySelector<HTMLElement>(`.badge-${k}`)!.textContent = counts[k].toString()
+      })
+    }
+
+    function showToast(msg: string, color: string) {
+      toast.textContent = msg
+      toast.className =
+        'fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 translate-y-24 items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium text-white opacity-0 transition-all duration-300 pointer-events-none'
+
+      const bgClass =
+        color === 'green' ? 'bg-ith-verde' : color === 'red' ? 'bg-ith-rojo' : 'bg-text-main'
+      toast.classList.add(bgClass)
+
+      setTimeout(() => toast.classList.remove('translate-y-24', 'opacity-0'), 10)
+      clearTimeout(toastTimer)
+      toastTimer = window.setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 3000)
+    }
+  })
+</script>

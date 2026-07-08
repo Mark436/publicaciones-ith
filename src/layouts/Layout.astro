@@ -1,22 +1,210 @@
+---
+import { navItems } from '@/constants/nav'
+import '@/global.css'
+
+interface Props {
+  title?: string
+  pageTitle?: string
+  pageSubtitle?: string
+}
+
+const {
+  title = '',
+  pageTitle = 'Dashboard',
+  pageSubtitle = 'Panel de gestión del portal ITH',
+} = Astro.props
+
+const currentPath = Astro.url.pathname
+
+function isActive(href: string) {
+  if (href === '/dashboard') return currentPath === '/' || currentPath === '/dashboard'
+  return currentPath.startsWith(href)
+}
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
-    <title>Publicaciones Ith</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap"
+      rel="stylesheet"
+    />
+    <title>
+      {title ? `${title} --` : ''} PublicacionesITH
+    </title>
   </head>
-  <body>
-    <slot />
-  </body>
-</html>
 
-<style>
-  html,
-  body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-  }
-</style>
+  <body class="bg-bg text-text-main h-full font-sans">
+    <aside
+      id="sidebar"
+      class="bg-ith-azul fixed top-0 bottom-0 left-0 z-50 flex w-60 -translate-x-full flex-col transition-transform duration-300 ease-in-out md:translate-x-0"
+    >
+      <div class="shrink-0 border-b border-white/10 px-5 py-6">
+        <div class="font-serif text-lg leading-tight text-white">PublicacionesITH</div>
+        <div class="mt-1 text-xs tracking-widest text-white/40 uppercase">Panel de Gestión</div>
+      </div>
+
+      <nav class="sidebar-nav flex-1 overflow-y-auto py-4">
+        {
+          navItems.map((group) => (
+            <>
+              <div class="px-5 pt-3 pb-1.5 text-xs font-semibold tracking-widest text-white/30 uppercase">
+                {group.section}
+              </div>
+              {group.items.map((item) => (
+                <a
+                  href={item.href}
+                  class={`nav-item flex items-center gap-2.5 border-l-4 px-5 py-2.5 text-sm no-underline transition-colors duration-200 ${isActive(item.href) ? 'border-ith-naranja bg-ith-azul-mid text-white' : 'border-transparent text-white/70 hover:bg-white/5 hover:text-white'}`}
+                >
+                  <span class="shrink-0" set:html={item.icon} />
+                  {item.label}
+                </a>
+              ))}
+            </>
+          ))
+        }
+      </nav>
+
+      <div class="shrink-0 border-t border-white/10 px-5 py-4">
+        <div class="flex items-center gap-2.5">
+          <div
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/15 text-sm font-medium text-white"
+          >
+            LZ
+          </div>
+          <div>
+            <div class="text-sm font-medium text-white">Loyda Zamudio</div>
+            <div class="text-xs text-white/40">Administrador</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div id="sidebarOverlay" class="fixed inset-0 z-40 hidden bg-black/40"></div>
+
+    <div class="flex min-h-screen flex-col md:ml-60">
+      <header
+        class="border-border bg-surface sticky top-0 z-30 flex h-16 items-center justify-between border-b px-8 max-md:px-5"
+      >
+        <div class="flex items-center gap-3">
+          <button
+            id="hamburger"
+            aria-label="Abrir menú"
+            class="text-text-muted hover:bg-bg hover:text-ith-azul cursor-pointer rounded-md border-none bg-transparent p-1 transition-colors md:hidden"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div>
+            <h1 class="text-ith-azul font-serif text-xl leading-tight font-normal">{pageTitle}</h1>
+            {pageSubtitle && <p class="text-text-muted mt-0.5 text-sm">{pageSubtitle}</p>}
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5">
+          <slot name="topbar-actions" />
+
+          <a
+            href="/login"
+            title="Cerrar sesión"
+            class="logout-btn border-border text-text-muted hover:bg-ith-rojo-light hover:text-ith-rojo hover:border-ith-rojo/30 flex h-9 w-9 items-center justify-center rounded-lg border no-underline transition-all duration-200"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path>
+              <polyline points="16,17 21,12 16,7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </a>
+        </div>
+      </header>
+
+      <div class="flex-1 p-8 max-md:p-5">
+        <slot />
+      </div>
+    </div>
+  </body>
+
+  <style>
+    /* ── Nav items: clases dinámicas que Tailwind no purga bien ── */
+    .nav-item--default {
+      color: #ffffff8c5;
+      border-left-color: transparent;
+    }
+    .nav-item--default:hover {
+      color: #ffffffe6;
+      background-color: #ffffff0d;
+    }
+    .nav-item--active {
+      color: #fff;
+      background-color: var(--color-ith-azul-mid);
+      border-left-color: var(--color-ith-naranja);
+    }
+
+    /* ── Scrollbar oculto del sidebar ── */
+    .sidebar-nav {
+      scrollbar-width: none; /* Firefox */
+    }
+    .sidebar-nav::-webkit-scrollbar {
+      display: none; /* Chrome / Safari */
+    }
+
+    /* ── Logout hover (unificado con el tema) ── */
+    .logout-btn:hover {
+      border-color: var(--color-ith-rojo);
+      background-color: var(--color-ith-rojo-light);
+      color: var(--color-ith-rojo);
+    }
+  </style>
+
+  <script>
+    const sidebar = document.getElementById('sidebar')!
+    const overlay = document.getElementById('sidebarOverlay')!
+    const hamburger = document.getElementById('hamburger')!
+
+    function openSidebar() {
+      sidebar.classList.add('translate-x-0')
+      sidebar.classList.remove('-translate-x-full')
+      overlay.classList.remove('hidden')
+    }
+
+    function closeSidebar() {
+      sidebar.classList.remove('translate-x-0')
+      sidebar.classList.add('-translate-x-full')
+      overlay.classList.add('hidden')
+    }
+
+    hamburger.addEventListener('click', () => {
+      const isOpen = !sidebar.classList.contains('-translate-x-full')
+      isOpen ? closeSidebar() : openSidebar()
+    })
+
+    overlay.addEventListener('click', closeSidebar)
+
+    document.querySelectorAll('.nav-item').forEach((item) => {
+      item.addEventListener('click', closeSidebar)
+    })
+  </script>
+</html>
