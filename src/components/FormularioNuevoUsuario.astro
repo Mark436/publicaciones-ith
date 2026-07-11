@@ -1,0 +1,369 @@
+---
+import Icono from '@/components/Icono.astro'
+---
+
+<section class="overflow-hidden rounded-2xl border border-slate-200 bg-indigo-50/40">
+  <header class="border-b border-slate-100 bg-indigo-50/60 p-6">
+    <h2 class="text-xl font-bold text-slate-900">Nuevo usuario</h2>
+    <p class="mt-1 text-sm text-slate-500">Completa los datos para crear una cuenta</p>
+  </header>
+
+  <form id="formulario-nuevo-usuario" class="space-y-5 bg-white p-6" novalidate>
+    <div>
+      <div class="mb-1.5 flex items-center justify-between">
+        <label
+          for="campo-nombre"
+          class="text-xs font-semibold tracking-wide text-slate-500 uppercase"
+        >
+          Nombre completo
+        </label>
+        <span
+          class="rounded border border-amber-100 bg-amber-50 px-1.5 py-0.5 text-xs font-medium text-amber-600"
+          >Requerido</span
+        >
+      </div>
+      <input
+        id="campo-nombre"
+        name="nombreCompleto"
+        type="text"
+        placeholder="Ej. García López Ana"
+        autocomplete="name"
+        class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200 focus:outline-none"
+      />
+      <p class="campo-error mt-1 hidden text-xs text-rose-600" role="alert"></p>
+    </div>
+
+    <div>
+      <div class="mb-1.5 flex items-center justify-between">
+        <label
+          for="campo-correo"
+          class="text-xs font-semibold tracking-wide text-slate-500 uppercase"
+        >
+          Correo institucional
+        </label>
+        <span
+          class="rounded border border-amber-100 bg-amber-50 px-1.5 py-0.5 text-xs font-medium text-amber-600"
+          >Requerido</span
+        >
+      </div>
+      <input
+        id="campo-correo"
+        name="correo"
+        type="email"
+        placeholder="nombre@ith.mx"
+        autocomplete="email"
+        class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200 focus:outline-none"
+      />
+      <p class="campo-error mt-1 hidden text-xs text-rose-600" role="alert"></p>
+    </div>
+
+    <div>
+      <div class="mb-1.5 flex items-center justify-between">
+        <label
+          for="campo-usuario"
+          class="text-xs font-semibold tracking-wide text-slate-500 uppercase"
+        >
+          Nombre de usuario
+        </label>
+        <span
+          class="rounded border border-amber-100 bg-amber-50 px-1.5 py-0.5 text-xs font-medium text-amber-600"
+          >Requerido</span
+        >
+      </div>
+      <input
+        id="campo-usuario"
+        name="nombreUsuario"
+        type="text"
+        placeholder="nombre.apellido"
+        autocomplete="username"
+        class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200 focus:outline-none"
+      />
+      <p class="campo-error mt-1 hidden text-xs text-rose-600" role="alert"></p>
+    </div>
+
+    <fieldset>
+      <legend class="mb-1.5 text-xs font-semibold tracking-wide text-slate-500 uppercase"
+        >Rol del usuario</legend
+      >
+      <div class="grid grid-cols-2 gap-3" id="grupo-rol">
+        <button
+          type="button"
+          data-rol="Editor"
+          aria-pressed="true"
+          class="role-toggle flex items-center justify-center gap-2 rounded-lg border border-slate-200 py-2.5 text-sm font-medium text-slate-600"
+        >
+          <Icono nombre="usuario" class="h-4 w-4" />
+          Editor
+        </button>
+        <button
+          type="button"
+          data-rol="Administrador"
+          aria-pressed="false"
+          class="role-toggle flex items-center justify-center gap-2 rounded-lg border border-slate-200 py-2.5 text-sm font-medium text-slate-600"
+        >
+          <Icono nombre="escudo" class="h-4 w-4" />
+          Administrador
+        </button>
+      </div>
+      <input type="hidden" name="rol" id="campo-rol" value="Editor" />
+    </fieldset>
+
+    <div>
+      <div class="mb-1.5 flex items-center justify-between">
+        <label
+          for="campo-password"
+          class="text-xs font-semibold tracking-wide text-slate-500 uppercase"
+        >
+          Contraseña
+        </label>
+        <span
+          class="rounded border border-amber-100 bg-amber-50 px-1.5 py-0.5 text-xs font-medium text-amber-600"
+          >Requerido</span
+        >
+      </div>
+      <div class="relative">
+        <input
+          id="campo-password"
+          name="password"
+          type="password"
+          placeholder="Mínimo 8 caracteres"
+          autocomplete="new-password"
+          minlength="8"
+          class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 pr-10 text-sm text-slate-700 placeholder:text-slate-400 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200 focus:outline-none"
+        />
+        <button
+          type="button"
+          id="boton-mostrar-password"
+          title="Mostrar contraseña"
+          aria-label="Mostrar contraseña"
+          class="absolute inset-y-0 right-2 flex items-center text-slate-400 hover:text-slate-600"
+        >
+          <Icono nombre="ojo" class="h-4 w-4" />
+        </button>
+      </div>
+      <div class="mt-2 h-1 overflow-hidden rounded-full bg-slate-100">
+        <div id="medidor-fortaleza" class="strength-meter h-full w-0 bg-slate-300"></div>
+      </div>
+      <p id="texto-fortaleza" class="mt-1 text-xs text-slate-400">Ingresa una contraseña</p>
+    </div>
+
+    <div>
+      <label
+        for="campo-confirmar-password"
+        class="mb-1.5 block text-xs font-semibold tracking-wide text-slate-500 uppercase"
+      >
+        Confirmar contraseña
+      </label>
+      <input
+        id="campo-confirmar-password"
+        name="confirmarPassword"
+        type="password"
+        placeholder="Repite la contraseña"
+        autocomplete="new-password"
+        class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200 focus:outline-none"
+      />
+      <p class="campo-error mt-1 hidden text-xs text-rose-600" role="alert"></p>
+    </div>
+
+    <button
+      type="submit"
+      class="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 py-3 text-sm font-semibold text-white hover:bg-slate-800"
+    >
+      <Icono nombre="usuario-mas" class="h-4 w-4" />
+      Crear usuario
+    </button>
+
+    <p id="mensaje-confirmacion" class="hidden text-center text-sm text-emerald-600" role="status">
+    </p>
+  </form>
+</section>
+
+<script>
+  import { getAvatarClasses, getIniciales } from '@/constants/avatarColors'
+  import { COLORES_AVATAR_DISPONIBLES } from '@/constants/usuarios'
+  import type { Rol } from '@/types/usuario.ts'
+
+  const formulario = document.getElementById('formulario-nuevo-usuario') as HTMLFormElement | null
+  const grupoRol = document.getElementById('grupo-rol')
+  const campoRol = document.getElementById('campo-rol') as HTMLInputElement | null
+  const campoPassword = document.getElementById('campo-password') as HTMLInputElement | null
+  const campoConfirmarPassword = document.getElementById(
+    'campo-confirmar-password',
+  ) as HTMLInputElement | null
+  const botonMostrarPassword = document.getElementById('boton-mostrar-password')
+  const medidorFortaleza = document.getElementById('medidor-fortaleza')
+  const textoFortaleza = document.getElementById('texto-fortaleza')
+  const mensajeConfirmacion = document.getElementById('mensaje-confirmacion')
+
+  let mostrandoPassword = false
+  let contadorUsuariosCreados = 0
+
+  grupoRol?.addEventListener('click', (evento) => {
+    const boton = (evento.target as HTMLElement).closest(
+      'button[data-rol]',
+    ) as HTMLButtonElement | null
+    if (!boton || !campoRol) return
+
+    grupoRol.querySelectorAll('button[data-rol]').forEach((elemento) => {
+      elemento.setAttribute('aria-pressed', 'false')
+    })
+    boton.setAttribute('aria-pressed', 'true')
+    campoRol.value = boton.dataset.rol ?? 'Editor'
+  })
+
+  botonMostrarPassword?.addEventListener('click', () => {
+    if (!campoPassword) return
+    mostrandoPassword = !mostrandoPassword
+    campoPassword.type = mostrandoPassword ? 'text' : 'password'
+    const etiqueta = mostrandoPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
+    botonMostrarPassword.setAttribute('title', etiqueta)
+    botonMostrarPassword.setAttribute('aria-label', etiqueta)
+    botonMostrarPassword.innerHTML = mostrandoPassword
+      ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.94 10.94 0 0112 19c-7 0-11-7-11-7a20.3 20.3 0 015.06-5.94M9.9 4.24A9.13 9.13 0 0112 4c7 0 11 7 11 7a20.29 20.29 0 01-2.16 3.19M14.12 14.12a3 3 0 11-4.24-4.24M1 1l22 22"></path></svg>'
+      : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7zM12 15a3 3 0 100-6 3 3 0 000 6z"></path></svg>'
+  })
+
+  function calcularFortaleza(password: string): {
+    porcentaje: number
+    etiqueta: string
+    color: string
+  } {
+    if (password.length === 0) {
+      return { porcentaje: 0, etiqueta: 'Ingresa una contraseña', color: 'bg-slate-300' }
+    }
+
+    let puntos = 0
+    if (password.length >= 8) puntos += 1
+    if (/[A-Z]/.test(password)) puntos += 1
+    if (/[0-9]/.test(password)) puntos += 1
+    if (/[^A-Za-z0-9]/.test(password)) puntos += 1
+
+    const niveles = [
+      { porcentaje: 25, etiqueta: 'Muy débil', color: 'bg-rose-400' },
+      { porcentaje: 50, etiqueta: 'Débil', color: 'bg-amber-400' },
+      { porcentaje: 75, etiqueta: 'Aceptable', color: 'bg-amber-500' },
+      { porcentaje: 100, etiqueta: 'Fuerte', color: 'bg-emerald-500' },
+    ]
+
+    return niveles[Math.max(0, Math.min(puntos, niveles.length) - 1)] ?? niveles[0]
+  }
+
+  campoPassword?.addEventListener('input', () => {
+    if (!medidorFortaleza || !textoFortaleza || !campoPassword) return
+    const resultado = calcularFortaleza(campoPassword.value)
+
+    medidorFortaleza.className = `strength-meter h-full ${resultado.color}`
+    medidorFortaleza.style.width = `${resultado.porcentaje}%`
+    textoFortaleza.textContent = resultado.etiqueta
+  })
+
+  function mostrarError(campo: HTMLElement, texto: string): void {
+    campo.classList.add('border-rose-300')
+    const contenedor = campo.closest('div')
+    const parrafoError = contenedor?.querySelector('.campo-error')
+    if (parrafoError) {
+      parrafoError.textContent = texto
+      parrafoError.classList.remove('hidden')
+    }
+  }
+
+  function limpiarError(campo: HTMLElement): void {
+    campo.classList.remove('border-rose-300')
+    const contenedor = campo.closest('div')
+    const parrafoError = contenedor?.querySelector('.campo-error')
+    if (parrafoError) {
+      parrafoError.textContent = ''
+      parrafoError.classList.add('hidden')
+    }
+  }
+
+  function elegirColorAvatar(): (typeof COLORES_AVATAR_DISPONIBLES)[number] {
+    const color =
+      COLORES_AVATAR_DISPONIBLES[contadorUsuariosCreados % COLORES_AVATAR_DISPONIBLES.length]
+    contadorUsuariosCreados += 1
+    return color
+  }
+
+  formulario?.addEventListener('submit', (evento) => {
+    evento.preventDefault()
+    mensajeConfirmacion?.classList.add('hidden')
+
+    const datos = new FormData(formulario)
+    const nombreCompleto = String(datos.get('nombreCompleto') ?? '').trim()
+    const correo = String(datos.get('correo') ?? '').trim()
+    const nombreUsuario = String(datos.get('nombreUsuario') ?? '').trim()
+    const rol = String(datos.get('rol') ?? 'Editor') as Rol
+    const password = String(datos.get('password') ?? '')
+    const confirmarPassword = String(datos.get('confirmarPassword') ?? '')
+
+    const campoNombre = document.getElementById('campo-nombre') as HTMLInputElement
+    const campoCorreo = document.getElementById('campo-correo') as HTMLInputElement
+    const campoUsuario = document.getElementById('campo-usuario') as HTMLInputElement
+
+    ;[campoNombre, campoCorreo, campoUsuario, campoConfirmarPassword].forEach((campo) => {
+      if (campo) limpiarError(campo)
+    })
+
+    let esValido = true
+
+    if (!nombreCompleto) {
+      mostrarError(campoNombre, 'El nombre completo es requerido')
+      esValido = false
+    }
+
+    if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+      mostrarError(campoCorreo, 'Ingresa un correo institucional válido')
+      esValido = false
+    }
+
+    if (!nombreUsuario) {
+      mostrarError(campoUsuario, 'El nombre de usuario es requerido')
+      esValido = false
+    }
+
+    if (password.length < 8) {
+      esValido = false
+      if (textoFortaleza) {
+        textoFortaleza.textContent = 'La contraseña debe tener al menos 8 caracteres'
+        textoFortaleza.classList.add('text-rose-600')
+      }
+    } else {
+      textoFortaleza?.classList.remove('text-rose-600')
+    }
+
+    if (password !== confirmarPassword && campoConfirmarPassword) {
+      mostrarError(campoConfirmarPassword, 'Las contraseñas no coinciden')
+      esValido = false
+    }
+
+    if (!esValido) return
+
+    const iniciales = getIniciales(nombreCompleto)
+    const colorAvatarClases = getAvatarClasses(elegirColorAvatar())
+
+    formulario.dispatchEvent(
+      new CustomEvent('usuario:crear', {
+        bubbles: true,
+        detail: { nombreCompleto, nombreUsuario, correo, rol, iniciales, colorAvatarClases },
+      }),
+    )
+
+    formulario.reset()
+    grupoRol?.querySelectorAll('button[data-rol]').forEach((elemento) => {
+      elemento.setAttribute(
+        'aria-pressed',
+        elemento.getAttribute('data-rol') === 'Editor' ? 'true' : 'false',
+      )
+    })
+    if (campoRol) campoRol.value = 'Editor'
+    if (medidorFortaleza) {
+      medidorFortaleza.className = 'strength-meter h-full w-0 bg-slate-300'
+    }
+    if (textoFortaleza) textoFortaleza.textContent = 'Ingresa una contraseña'
+
+    if (mensajeConfirmacion) {
+      mensajeConfirmacion.textContent = `${nombreCompleto} se agregó correctamente`
+      mensajeConfirmacion.classList.remove('hidden')
+    }
+  })
+</script>

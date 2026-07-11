@@ -1,0 +1,65 @@
+import type { Usuario } from "@/types/usuario";
+
+export const USUARIOS_DATA: Usuario[] = [
+  {
+    id: "usr-001",
+    nombreCompleto: "Loyda Zamudio",
+    nombreUsuario: "loyda.zamudio",
+    correo: "loyda.zamudio@ith.mx",
+    rol: "Administrador",
+    estado: "Activo",
+    iniciales: "LZ",
+    colorAvatar: "purple",
+  },
+  {
+    id: "usr-002",
+    nombreCompleto: "Luis Beaven Ramírez",
+    nombreUsuario: "luis.beaven",
+    correo: "luis.beaven@ith.mx",
+    rol: "Editor",
+    estado: "Activo",
+    iniciales: "LB",
+    colorAvatar: "rose",
+  },
+  {
+    id: "usr-003",
+    nombreCompleto: "Eduardo Dueñas Moreno",
+    nombreUsuario: "eduardo.duenas",
+    correo: "eduardo.duenas@ith.mx",
+    rol: "Editor",
+    estado: "Activo",
+    iniciales: "ED",
+    colorAvatar: "teal",
+  },
+  {
+    id: "usr-004",
+    nombreCompleto: "Kavin Moreno Munguia",
+    nombreUsuario: "kavin.moreno",
+    correo: "kavin.moreno@ith.mx",
+    rol: "Editor",
+    estado: "Activo",
+    iniciales: "KM",
+    colorAvatar: "amber",
+  },
+  {
+    id: "usr-005",
+    nombreCompleto: "Martín Gómez",
+    nombreUsuario: "martin.gomez",
+    correo: "martin.gomez@ith.mx",
+    rol: "Editor",
+    estado: "Inactivo",
+    iniciales: "MG",
+    colorAvatar: "indigo",
+  },
+];
+
+export const COLORES_AVATAR_DISPONIBLES: Usuario["colorAvatar"][] = [
+  "purple",
+  "rose",
+  "teal",
+  "amber",
+  "indigo",
+  "sky",
+  "emerald",
+  "pink",
+];

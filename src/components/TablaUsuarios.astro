@@ -1,0 +1,240 @@
+---
+import Icono from '@/components/Icono.astro'
+import { USUARIOS_DATA } from '@/constants/usuarios'
+import { getAvatarClasses } from '@/constants/avatarColors'
+import { getRolBadgeClasses } from '@/constants/badges'
+
+const usuarios = USUARIOS_DATA
+---
+
+<section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <header class="flex items-start justify-between gap-6 border-b border-slate-100 p-6">
+    <div>
+      <h1 class="text-xl font-bold text-slate-900">Usuarios registrados</h1>
+      <p class="mt-1 text-sm text-slate-500">
+        <span id="contador-usuarios">{usuarios.length}</span> usuarios en el sistema
+      </p>
+    </div>
+
+    <div class="relative w-64">
+      <span class="absolute inset-y-0 left-3 flex items-center text-slate-400">
+        <Icono nombre="buscar" class="h-4 w-4" />
+      </span>
+      <input
+        id="buscador-usuarios"
+        type="search"
+        placeholder="Buscar usuario..."
+        aria-label="Buscar usuario"
+        class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 pr-3 pl-9 text-sm text-slate-700 placeholder:text-slate-400 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200 focus:outline-none"
+      />
+    </div>
+  </header>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-left">
+      <thead>
+        <tr
+          class="border-b border-slate-100 text-xs font-semibold tracking-wide text-slate-400 uppercase"
+        >
+          <th class="px-6 py-3">Usuario</th>
+          <th class="px-6 py-3">Correo</th>
+          <th class="px-6 py-3">Rol</th>
+          <th class="px-6 py-3">Estado</th>
+          <th class="px-6 py-3">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="cuerpo-tabla-usuarios" class="divide-y divide-slate-100">
+        {
+          usuarios.map((usuario) => {
+            const avatar = getAvatarClasses(usuario.colorAvatar)
+            return (
+              <tr
+                data-user-row
+                data-search-text={`${usuario.nombreCompleto} ${usuario.nombreUsuario} ${usuario.correo}`.toLowerCase()}
+                class="user-row"
+              >
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-3">
+                    <span
+                      class={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${avatar.background} ${avatar.text}`}
+                    >
+                      {usuario.iniciales}
+                    </span>
+                    <div>
+                      <p class="leading-tight font-semibold text-slate-900">
+                        {usuario.nombreCompleto}
+                      </p>
+                      <p class="text-sm leading-tight text-slate-400">@{usuario.nombreUsuario}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 text-sm text-slate-600">{usuario.correo}</td>
+                <td class="px-6 py-4">
+                  <span
+                    class={`inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-semibold ${getRolBadgeClasses(usuario.rol)}`}
+                  >
+                    {usuario.rol}
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                  <span
+                    class="status-dot inline-flex items-center text-sm text-slate-600"
+                    data-estado={usuario.estado}
+                  >
+                    {usuario.estado}
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-2">
+                    <button
+                      type="button"
+                      title="Editar usuario"
+                      aria-label="Editar usuario"
+                      class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                    >
+                      <Icono nombre="editar" class="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      title="Bloquear usuario"
+                      aria-label="Bloquear usuario"
+                      class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                    >
+                      <Icono nombre="candado" class="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      title="Eliminar usuario"
+                      aria-label="Eliminar usuario"
+                      class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-rose-50 hover:text-rose-600"
+                    >
+                      <Icono nombre="basura" class="h-4 w-4" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            )
+          })
+        }
+      </tbody>
+    </table>
+
+    <p id="mensaje-sin-resultados" class="hidden px-6 py-10 text-center text-sm text-slate-400">
+      Ningún usuario coincide con tu búsqueda.
+    </p>
+  </div>
+</section>
+
+<script>
+  interface DetalleUsuarioCreado {
+    nombreCompleto: string
+    nombreUsuario: string
+    correo: string
+    rol: 'Administrador' | 'Editor'
+    iniciales: string
+    colorAvatarClases: { background: string; text: string }
+  }
+
+  const buscador = document.getElementById('buscador-usuarios') as HTMLInputElement | null
+  const filas = () => Array.from(document.querySelectorAll<HTMLTableRowElement>('[data-user-row]'))
+  const mensajeSinResultados = document.getElementById('mensaje-sin-resultados')
+  const contador = document.getElementById('contador-usuarios')
+  const cuerpoTabla = document.getElementById('cuerpo-tabla-usuarios')
+
+  function actualizarContador(): void {
+    if (contador) {
+      contador.textContent = String(filas().length)
+    }
+  }
+
+  function aplicarFiltro(): void {
+    const consulta = (buscador?.value ?? '').trim().toLowerCase()
+    let visibles = 0
+
+    filas().forEach((fila) => {
+      const textoBusqueda = fila.dataset.searchText ?? ''
+      const coincide = textoBusqueda.includes(consulta)
+      fila.classList.toggle('hidden', !coincide)
+      if (coincide) visibles += 1
+    })
+
+    mensajeSinResultados?.classList.toggle('hidden', visibles !== 0)
+  }
+
+  buscador?.addEventListener('input', aplicarFiltro)
+
+  function badgeRolClases(rol: 'Administrador' | 'Editor'): string {
+    return rol === 'Administrador'
+      ? 'bg-indigo-50 text-indigo-700 border-indigo-100'
+      : 'bg-slate-100 text-slate-700 border-slate-200'
+  }
+
+  function crearFilaUsuario(detalle: DetalleUsuarioCreado): HTMLTableRowElement {
+    const fila = document.createElement('tr')
+    fila.dataset.userRow = ''
+    fila.dataset.searchText =
+      `${detalle.nombreCompleto} ${detalle.nombreUsuario} ${detalle.correo}`.toLowerCase()
+    fila.className = 'user-row'
+
+    fila.innerHTML = `
+      <td class="px-6 py-4">
+        <div class="flex items-center gap-3">
+          <span class="flex items-center justify-center w-10 h-10 rounded-full font-semibold text-sm shrink-0 ${detalle.colorAvatarClases.background} ${detalle.colorAvatarClases.text}">
+            ${detalle.iniciales}
+          </span>
+          <div>
+            <p class="font-semibold text-slate-900 leading-tight">${detalle.nombreCompleto}</p>
+            <p class="text-sm text-slate-400 leading-tight">@${detalle.nombreUsuario}</p>
+          </div>
+        </div>
+      </td>
+      <td class="px-6 py-4 text-sm text-slate-600">${detalle.correo}</td>
+      <td class="px-6 py-4">
+        <span class="inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-semibold ${badgeRolClases(detalle.rol)}">
+          ${detalle.rol}
+        </span>
+      </td>
+      <td class="px-6 py-4">
+        <span class="status-dot inline-flex items-center text-sm text-slate-600" data-estado="Activo">Activo</span>
+      </td>
+      <td class="px-6 py-4">
+        <div class="flex items-center gap-2">
+          <button type="button" title="Editar usuario" aria-label="Editar usuario" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          </button>
+          <button type="button" title="Bloquear usuario" aria-label="Bloquear usuario" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11V7a5 5 0 0110 0v4M5 11h10a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2z"></path></svg>
+          </button>
+          <button type="button" title="Eliminar usuario" aria-label="Eliminar usuario" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:bg-rose-50 hover:text-rose-600">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"></path></svg>
+          </button>
+        </div>
+      </td>
+    `
+
+    return fila
+  }
+
+  document.addEventListener('usuario:crear', (evento) => {
+    const detalle = (evento as CustomEvent<DetalleUsuarioCreado>).detail
+    if (!detalle || !cuerpoTabla) return
+
+    cuerpoTabla.appendChild(crearFilaUsuario(detalle))
+    actualizarContador()
+    aplicarFiltro()
+  })
+
+  // Delegación de eventos para futuras acciones sobre filas (editar, bloquear, eliminar)
+  cuerpoTabla?.addEventListener('click', (evento) => {
+    const boton = (evento.target as HTMLElement).closest('button')
+    if (!boton) return
+
+    const fila = boton.closest('[data-user-row]') as HTMLTableRowElement | null
+    if (!fila) return
+
+    if (boton.title === 'Eliminar usuario') {
+      fila.remove()
+      actualizarContador()
+    }
+  })
+</script>
