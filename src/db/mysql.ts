@@ -1,11 +1,5 @@
 import mysql from 'mysql2/promise'
 
-export const db = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'tu_password',
-  database: 'BlogDB',
-  waitForConnections: true,
-  connectionLimit: 10,
+export const db = await mysql.createConnection({
+  uri: import.meta.env.MYSQL_URI,
 })
-const exportado = { db }
