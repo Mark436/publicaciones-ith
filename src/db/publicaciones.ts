@@ -1,28 +1,42 @@
-import { db } from '@/db/mysql.ts'
-import type { Usuario } from '@/types/usuario'
+// src/services/post.service.ts
+import db from '@/db/prisma'
 
 type CreatePostDto = {
   Titulo: string
   Contenido: string
-  FechaCreacion: Date
-  Estado: string
-  Orden: string
-  IdUsuario: Usuario['id']
+  FechaCreacion?: Date
+  Estado: number
+  Orden?: string
+  IdUsuario: number
 }
 
 export class PostService {
   static async getAll() {
-    const [rows] = await db.query('select * from Publicacion')
-
-    return rows
+    return await db.publicacion.findMany({
+      include: {
+        usuario: true,
+        imagenes: true,
+      },
+    })
   }
 
   static async createPublicacion(newPost: CreatePostDto) {
     const { Titulo, Contenido, FechaCreacion, Estado, Orden, IdUsuario } = newPost
 
-    await db.query(
-      'insert into Publicaciones(Titulo,Contenido,Fecha_Creacion,Estado,Orden,Id_Usuario) values(?,?,?,?,?,?)',
-      [Titulo, Contenido, FechaCreacion, Estado, Orden, IdUsuario],
-    )
+    return await db.publicacion.create({
+      data: {
+        Titulo,
+        Contenido,
+        Fecha_Creacion: FechaCreacion ?? new Date(),
+        Estado,
+        Orden,
+
+        usuario: {
+          connect: {
+            Id_Usuario: IdUsuario,
+          },
+        },
+      },
+    })
   }
 }
