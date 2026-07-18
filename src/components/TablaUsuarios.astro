@@ -1,10 +1,11 @@
 ---
 import Icono from '@/components/Icono.astro'
-import { USUARIOS_DATA } from '@/constants/usuarios'
-import { getAvatarClasses } from '@/constants/avatarColors'
+import { getAvatarClasses, getIniciales } from '@/constants/avatarColors'
 import { getRolBadgeClasses } from '@/constants/badges'
+import { UserService } from '@/db/usuarios'
+import type { Usuario } from '@/generated/client'
 
-const usuarios = USUARIOS_DATA
+const usuarios: Usuario[] = await UserService.getAll()
 ---
 
 <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -46,11 +47,13 @@ const usuarios = USUARIOS_DATA
       <tbody id="cuerpo-tabla-usuarios" class="divide-y divide-slate-100">
         {
           usuarios.map((usuario) => {
-            const avatar = getAvatarClasses(usuario.colorAvatar)
+            const avatar = getAvatarClasses(usuario.Color)
+            const iniciales = getIniciales(usuario.Nombre_Completo)
             return (
               <tr
                 data-user-row
-                data-search-text={`${usuario.nombreCompleto} ${usuario.nombreUsuario} ${usuario.correo}`.toLowerCase()}
+                data-user-id={usuario.Id_Usuario}
+                data-search-text={`${usuario.Nombre_Completo} ${usuario.Nombre_Usuario} ${usuario.Correo}`.toLowerCase()}
                 class="user-row"
               >
                 <td class="px-6 py-4">
@@ -58,30 +61,30 @@ const usuarios = USUARIOS_DATA
                     <span
                       class={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${avatar.background} ${avatar.text}`}
                     >
-                      {usuario.iniciales}
+                      {iniciales}
                     </span>
                     <div>
                       <p class="leading-tight font-semibold text-slate-900">
-                        {usuario.nombreCompleto}
+                        {usuario.Nombre_Completo}
                       </p>
-                      <p class="text-sm leading-tight text-slate-400">@{usuario.nombreUsuario}</p>
+                      <p class="text-sm leading-tight text-slate-400">@{usuario.Nombre_Usuario}</p>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 text-sm text-slate-600">{usuario.correo}</td>
+                <td class="px-6 py-4 text-sm text-slate-600">{usuario.Correo}</td>
                 <td class="px-6 py-4">
                   <span
-                    class={`inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-semibold ${getRolBadgeClasses(usuario.rol)}`}
+                    class={`inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-semibold ${getRolBadgeClasses(usuario.Rol)}`}
                   >
-                    {usuario.rol}
+                    {usuario.Rol}
                   </span>
                 </td>
                 <td class="px-6 py-4">
                   <span
                     class="status-dot inline-flex items-center text-sm text-slate-600"
-                    data-estado={usuario.estado}
+                    data-estado={usuario.Estado}
                   >
-                    {usuario.estado}
+                    {usuario.Estado}
                   </span>
                 </td>
                 <td class="px-6 py-4">
@@ -106,7 +109,7 @@ const usuarios = USUARIOS_DATA
                       type="button"
                       title="Eliminar usuario"
                       aria-label="Eliminar usuario"
-                      class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-rose-50 hover:text-rose-600"
+                      class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <Icono nombre="basura" class="h-4 w-4" />
                     </button>
@@ -169,9 +172,10 @@ const usuarios = USUARIOS_DATA
       : 'bg-slate-100 text-slate-700 border-slate-200'
   }
 
-  function crearFilaUsuario(detalle: DetalleUsuarioCreado): HTMLTableRowElement {
+  function crearFilaUsuario(detalle: DetalleUsuarioCreado & { id?: number }): HTMLTableRowElement {
     const fila = document.createElement('tr')
     fila.dataset.userRow = ''
+    if (detalle.id !== undefined) fila.dataset.userId = String(detalle.id)
     fila.dataset.searchText =
       `${detalle.nombreCompleto} ${detalle.nombreUsuario} ${detalle.correo}`.toLowerCase()
     fila.className = 'user-row'
@@ -205,7 +209,7 @@ const usuarios = USUARIOS_DATA
           <button type="button" title="Bloquear usuario" aria-label="Bloquear usuario" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11V7a5 5 0 0110 0v4M5 11h10a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2z"></path></svg>
           </button>
-          <button type="button" title="Eliminar usuario" aria-label="Eliminar usuario" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:bg-rose-50 hover:text-rose-600">
+          <button type="button" title="Eliminar usuario" aria-label="Eliminar usuario" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-50">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"></path></svg>
           </button>
         </div>
@@ -216,7 +220,7 @@ const usuarios = USUARIOS_DATA
   }
 
   document.addEventListener('usuario:crear', (evento) => {
-    const detalle = (evento as CustomEvent<DetalleUsuarioCreado>).detail
+    const detalle = (evento as CustomEvent<DetalleUsuarioCreado & { id?: number }>).detail
     if (!detalle || !cuerpoTabla) return
 
     cuerpoTabla.appendChild(crearFilaUsuario(detalle))
@@ -224,8 +228,8 @@ const usuarios = USUARIOS_DATA
     aplicarFiltro()
   })
 
-  // Delegación de eventos para futuras acciones sobre filas (editar, bloquear, eliminar)
-  cuerpoTabla?.addEventListener('click', (evento) => {
+  // Delegación de eventos para acciones sobre filas (editar, bloquear, eliminar)
+  cuerpoTabla?.addEventListener('click', async (evento) => {
     const boton = (evento.target as HTMLElement).closest('button')
     if (!boton) return
 
@@ -233,8 +237,37 @@ const usuarios = USUARIOS_DATA
     if (!fila) return
 
     if (boton.title === 'Eliminar usuario') {
-      fila.remove()
-      actualizarContador()
+      const userId = fila.dataset.userId
+      if (!userId) {
+        console.error('La fila no tiene data-user-id, no se puede eliminar contra el servidor')
+        return
+      }
+
+      const nombre = fila.querySelector('p.font-semibold')?.textContent?.trim() ?? 'este usuario'
+      const confirmado = window.confirm(
+        `¿Seguro que quieres eliminar a ${nombre}? Esta acción no se puede deshacer.`,
+      )
+      if (!confirmado) return
+
+      const botonesFila = fila.querySelectorAll('button')
+      botonesFila.forEach((b) => (b.disabled = true))
+
+      try {
+        const respuesta = await fetch(`/api/usuarios/${userId}`, { method: 'DELETE' })
+
+        if (!respuesta.ok) {
+          const cuerpoError = await respuesta.json().catch(() => null)
+          throw new Error(cuerpoError?.mensaje ?? 'No se pudo eliminar el usuario')
+        }
+
+        fila.remove()
+        actualizarContador()
+        aplicarFiltro()
+      } catch (error) {
+        botonesFila.forEach((b) => (b.disabled = false))
+        const mensaje = error instanceof Error ? error.message : 'Ocurrió un error al eliminar'
+        window.alert(mensaje)
+      }
     }
   })
 </script>

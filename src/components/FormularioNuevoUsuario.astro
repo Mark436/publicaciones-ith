@@ -1,5 +1,6 @@
 ---
 import Icono from '@/components/Icono.astro'
+import { Rol } from '@/generated/client'
 ---
 
 <section class="overflow-hidden rounded-2xl border border-slate-200 bg-indigo-50/40">
@@ -88,7 +89,7 @@ import Icono from '@/components/Icono.astro'
       <div class="grid grid-cols-2 gap-3" id="grupo-rol">
         <button
           type="button"
-          data-rol="Editor"
+          data-rol={Rol.USER}
           aria-pressed="true"
           class="role-toggle flex items-center justify-center gap-2 rounded-lg border border-slate-200 py-2.5 text-sm font-medium text-slate-600"
         >
@@ -97,7 +98,7 @@ import Icono from '@/components/Icono.astro'
         </button>
         <button
           type="button"
-          data-rol="Administrador"
+          data-rol={Rol.ADMIN}
           aria-pressed="false"
           class="role-toggle flex items-center justify-center gap-2 rounded-lg border border-slate-200 py-2.5 text-sm font-medium text-slate-600"
         >
@@ -167,21 +168,29 @@ import Icono from '@/components/Icono.astro'
 
     <button
       type="submit"
-      class="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 py-3 text-sm font-semibold text-white hover:bg-slate-800"
+      id="boton-crear-usuario"
+      class="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 py-3 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
     >
       <Icono nombre="usuario-mas" class="h-4 w-4" />
-      Crear usuario
+      <span id="texto-boton-crear">Crear usuario</span>
     </button>
 
-    <p id="mensaje-confirmacion" class="hidden text-center text-sm text-emerald-600" role="status">
-    </p>
+    <p id="mensaje-confirmacion" class="hidden text-center text-sm" role="status"></p>
   </form>
 </section>
 
 <script>
-  import { getAvatarClasses, getIniciales } from '@/constants/avatarColors'
-  import { COLORES_AVATAR_DISPONIBLES } from '@/constants/usuarios'
+  import { getIniciales } from '@/constants/avatarColors'
   import type { Rol } from '@/types/usuario.ts'
+
+  interface UsuarioCreadoRespuesta {
+    nombreCompleto: string
+    nombreUsuario: string
+    correo: string
+    rol: Rol
+    iniciales: string
+    colorAvatarClases: { background: string; text: string }
+  }
 
   const formulario = document.getElementById('formulario-nuevo-usuario') as HTMLFormElement | null
   const grupoRol = document.getElementById('grupo-rol')
@@ -191,12 +200,15 @@ import Icono from '@/components/Icono.astro'
     'campo-confirmar-password',
   ) as HTMLInputElement | null
   const botonMostrarPassword = document.getElementById('boton-mostrar-password')
+  const botonCrearUsuario = document.getElementById(
+    'boton-crear-usuario',
+  ) as HTMLButtonElement | null
+  const textoBotonCrear = document.getElementById('texto-boton-crear')
   const medidorFortaleza = document.getElementById('medidor-fortaleza')
   const textoFortaleza = document.getElementById('texto-fortaleza')
   const mensajeConfirmacion = document.getElementById('mensaje-confirmacion')
 
   let mostrandoPassword = false
-  let contadorUsuariosCreados = 0
 
   grupoRol?.addEventListener('click', (evento) => {
     const boton = (evento.target as HTMLElement).closest(
@@ -277,14 +289,20 @@ import Icono from '@/components/Icono.astro'
     }
   }
 
-  function elegirColorAvatar(): (typeof COLORES_AVATAR_DISPONIBLES)[number] {
-    const color =
-      COLORES_AVATAR_DISPONIBLES[contadorUsuariosCreados % COLORES_AVATAR_DISPONIBLES.length]
-    contadorUsuariosCreados += 1
-    return color
+  function mostrarMensaje(texto: string, tipo: 'exito' | 'error'): void {
+    if (!mensajeConfirmacion) return
+    mensajeConfirmacion.textContent = texto
+    mensajeConfirmacion.classList.remove('hidden', 'text-emerald-600', 'text-rose-600')
+    mensajeConfirmacion.classList.add(tipo === 'exito' ? 'text-emerald-600' : 'text-rose-600')
   }
 
-  formulario?.addEventListener('submit', (evento) => {
+  function establecerCargando(cargando: boolean): void {
+    if (!botonCrearUsuario || !textoBotonCrear) return
+    botonCrearUsuario.disabled = cargando
+    textoBotonCrear.textContent = cargando ? 'Creando...' : 'Crear usuario'
+  }
+
+  formulario?.addEventListener('submit', async (evento) => {
     evento.preventDefault()
     mensajeConfirmacion?.classList.add('hidden')
 
@@ -338,32 +356,57 @@ import Icono from '@/components/Icono.astro'
 
     if (!esValido) return
 
-    const iniciales = getIniciales(nombreCompleto)
-    const colorAvatarClases = getAvatarClasses(elegirColorAvatar())
+    establecerCargando(true)
 
-    formulario.dispatchEvent(
-      new CustomEvent('usuario:crear', {
-        bubbles: true,
-        detail: { nombreCompleto, nombreUsuario, correo, rol, iniciales, colorAvatarClases },
-      }),
-    )
+    try {
+      const respuesta = await fetch('/api/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombreCompleto,
+          nombreUsuario,
+          correo,
+          rol,
+          password,
+        }),
+      })
 
-    formulario.reset()
-    grupoRol?.querySelectorAll('button[data-rol]').forEach((elemento) => {
-      elemento.setAttribute(
-        'aria-pressed',
-        elemento.getAttribute('data-rol') === 'Editor' ? 'true' : 'false',
+      if (!respuesta.ok) {
+        const cuerpoError = await respuesta.json().catch(() => null)
+        throw new Error(cuerpoError?.mensaje ?? 'No se pudo crear el usuario')
+      }
+
+      const usuarioCreado = (await respuesta.json()) as UsuarioCreadoRespuesta
+
+      // Si el servidor no manda iniciales/color por alguna razón, se calculan aquí como respaldo
+      const iniciales = usuarioCreado.iniciales ?? getIniciales(nombreCompleto)
+
+      formulario.dispatchEvent(
+        new CustomEvent('usuario:crear', {
+          bubbles: true,
+          detail: { ...usuarioCreado, iniciales },
+        }),
       )
-    })
-    if (campoRol) campoRol.value = 'Editor'
-    if (medidorFortaleza) {
-      medidorFortaleza.className = 'strength-meter h-full w-0 bg-slate-300'
-    }
-    if (textoFortaleza) textoFortaleza.textContent = 'Ingresa una contraseña'
 
-    if (mensajeConfirmacion) {
-      mensajeConfirmacion.textContent = `${nombreCompleto} se agregó correctamente`
-      mensajeConfirmacion.classList.remove('hidden')
+      formulario.reset()
+      grupoRol?.querySelectorAll('button[data-rol]').forEach((elemento) => {
+        elemento.setAttribute(
+          'aria-pressed',
+          elemento.getAttribute('data-rol') === 'Editor' ? 'true' : 'false',
+        )
+      })
+      if (campoRol) campoRol.value = 'Editor'
+      if (medidorFortaleza) {
+        medidorFortaleza.className = 'strength-meter h-full w-0 bg-slate-300'
+      }
+      if (textoFortaleza) textoFortaleza.textContent = 'Ingresa una contraseña'
+
+      mostrarMensaje(`${nombreCompleto} se agregó correctamente`, 'exito')
+    } catch (error) {
+      const texto = error instanceof Error ? error.message : 'Ocurrió un error inesperado'
+      mostrarMensaje(texto, 'error')
+    } finally {
+      establecerCargando(false)
     }
   })
 </script>

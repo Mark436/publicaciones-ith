@@ -6,13 +6,21 @@ generator client {
 datasource db {
   provider = "mysql"
 }
+enum Estado {
+  Activo
+  Bloqueado
+}
 
 model Usuario {
   Id_Usuario      Int           @id @default(autoincrement())
-  Nombre_Usuario  String        @db.VarChar(50)
+  Nombre_Completo String        @db.VarChar(100)
+  Nombre_Usuario  String        @unique @db.VarChar(50)
   Correo          String        @unique @db.VarChar(50)
   Contrasena_Hash String        @db.VarChar(80)
+  Color           Color
   Rol             Rol
+  Estado          Estado        @default(Activo)
+  createdAt       DateTime      @default(now())
   publicaciones   Publicacion[]
 }
 
@@ -42,4 +50,15 @@ model Imagen {
 enum Rol {
   ADMIN
   USER
+}
+
+enum Color {
+  purple
+  pink
+  rose
+  teal
+  amber
+  indigo
+  sky
+  emerald
 }
